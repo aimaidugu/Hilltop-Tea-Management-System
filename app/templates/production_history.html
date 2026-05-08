@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Production History - Hilltop Tea{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-history"></i> Production History</h2>
+            <div>
+                <span class="badge bg-primary fs-6">{{ get_month_name(current_month) }} {{ current_year }}</span>
+            </div>
+        </div>
+
+        {% if grouped_records %}
+            {% for record_date, records in grouped_records.items() %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-calendar-day"></i> {{ record_date }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Group</th>
+                                        <th class="text-end">Cartons</th>
+                                        <th class="text-end">Daily Wage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in records %}
+                                        <tr>
+                                            <td>{{ record.employee.name }}</td>
+                                            <td>
+                                                <span class="badge {% if record.employee.is_production() %}badge-production{% else %}badge-wrapping{% endif %}">
+                                                    {{ record.employee.group|capitalize }}
+                                                </span>
+                                            </td>
+                                            <td class="text-end">{{ record.cartons }}</td>
+                                            <td class="text-end">{{ format_currency(record.daily_wage) }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-dark">
+                                        <td colspan="2"><strong>Daily Total</strong></td>
+                                        <td class="text-end">
+                                            <strong>{{ daily_totals[record_date].cartons }}</strong>
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>{{ format_currency(daily_totals[record_date].wage) }}</strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Month Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Month Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon stat-icon-tea">
+                                    <i class="fas fa-boxes"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h6 class="stat-label">Total Cartons</h6>
+                                    <p class="stat-value">{{ month_cartons }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon stat-icon-wages">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h6 class="stat-label">Total Wages</h6>
+                                    <p class="stat-value">{{ format_currency(month_wage) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon stat-icon-calendar">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h6 class="stat-label">Working Days</h6>
+                                    <p class="stat-value">{{ grouped_records|length }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No production records found for this month.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

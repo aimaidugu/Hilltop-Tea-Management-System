@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hilltop Tea{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="hero-section">
+            <h1 class="display-4">Welcome to Hilltop Tea</h1>
+            <p class="lead">Premium Tea, Precision Tracking</p>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-tea">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-content">
+                <h6 class="stat-label">Today's Production</h6>
+                <p class="stat-value">{{ today_cartons }}</p>
+                <small class="stat-sub">cartons</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-money">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stat-content">
+                <h6 class="stat-label">Today's Wages</h6>
+                <p class="stat-value">{{ format_currency(today_wage) }}</p>
+                <small class="stat-sub">total</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-wages">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-content">
+                <h6 class="stat-label">Month Wages</h6>
+                <p class="stat-value">{{ format_currency(month_wages) }}</p>
+                <small class="stat-sub">{{ get_month_name(current_month) }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-balance">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <div class="stat-content">
+                <h6 class="stat-label">Outstanding</h6>
+                <p class="stat-value {{ 'text-danger' if balance > 0 else 'text-success' }}">
+                    {{ format_currency(balance) }}
+                </p>
+                <small class="stat-sub">balance</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Stats -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-card-header">
+                <h5><i class="fas fa-users"></i> Active Employees</h5>
+            </div>
+            <div class="info-card-body">
+                <div class="info-item">
+                    <span class="info-label">Total Active:</span>
+                    <span class="info-value">{{ active_employees }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Production:</span>
+                    <span class="info-value">{{ production_count }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Wrapping:</span>
+                    <span class="info-value">{{ wrapping_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-card-header">
+                <h5><i class="fas fa-chart-line"></i> Month Summary</h5>
+            </div>
+            <div class="info-card-body">
+                <div class="info-item">
+                    <span class="info-label">Total Paid:</span>
+                    <span class="info-value">{{ format_currency(month_paid) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Wages:</span>
+                    <span class="info-value">{{ format_currency(month_wages) }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Balance:</span>
+                    <span class="info-value {{ 'text-danger' if balance > 0 else 'text-success' }}">
+                        {{ format_currency(balance) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-card-header">
+                <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="info-card-body">
+                {% if current_user.is_supervisor() %}
+                    <a href="{{ url_for('production.daily_entry') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-plus-circle"></i> Enter Production
+                    </a>
+                {% endif %}
+                {% if current_user.can_view_payroll() %}
+                    <a href="{{ url_for('payroll.monthly_view') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-file-invoice-dollar"></i> View Payroll
+                    </a>
+                {% endif %}
+                {% if current_user.can_manage_employees() %}
+                    <a href="{{ url_for('employees.list_employees') }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-user-plus"></i> Manage Employees
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock"></i> Current Period</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    <strong>Current Month:</strong> {{ get_month_name(current_month) }} {{ current_year }}<br>
+                    <small class="text-muted">All production and payment data is tracked for this period.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

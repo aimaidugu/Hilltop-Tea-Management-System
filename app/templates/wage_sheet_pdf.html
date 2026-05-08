@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wage Sheet - {{ company_name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.4;
+            color: #2c3e50;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1e3932;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .company-name {
+            font-size: 24pt;
+            font-weight: bold;
+            color: #1e3932;
+            margin-bottom: 5px;
+        }
+        .company-tagline {
+            font-size: 12pt;
+            color: #c9a96e;
+            font-style: italic;
+        }
+        .report-title {
+            text-align: center;
+            font-size: 16pt;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #1e3932;
+        }
+        .report-period {
+            text-align: center;
+            font-size: 14pt;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th {
+            background-color: #1e3932;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #1e3932;
+        }
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .total-row {
+            background-color: #c9a96e !important;
+            font-weight: bold;
+            color: #1e3932;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10pt;
+        }
+        .badge-production {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .badge-wrapping {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .signature-line {
+            margin-top: 60px;
+        }
+        .signature-box {
+            width: 200px;
+            border-top: 1px solid #2c3e50;
+            padding-top: 5px;
+            text-align: center;
+        }
+        .generated-date {
+            text-align: right;
+            font-size: 10pt;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-name">{{ company_name }}</div>
+        <div class="company-tagline">Premium Tea, Precision Tracking</div>
+    </div>
+
+    <div class="report-title">WAGE SHEET</div>
+    <div class="report-period">{{ month_name }} {{ year }}</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Employee Name</th>
+                <th>Group</th>
+                <th class="text-right">Cartons</th>
+                <th class="text-right">Total Wage</th>
+                <th class="text-right">Total Paid</th>
+                <th class="text-right">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in wage_sheet_data %}
+            <tr>
+                <td class="text-center">{{ loop.index }}</td>
+                <td>{{ item.employee.name }}</td>
+                <td>
+                    <span class="badge {% if item.employee.is_production() %}badge-production{% else %}badge-wrapping{% endif %}">
+                        {{ item.employee.group|capitalize }}
+                    </span>
+                </td>
+                <td class="text-right">{{ item.total_cartons }}</td>
+                <td class="text-right">₦{{ "{:,.2f}".format(item.total_wage) }}</td>
+                <td class="text-right">₦{{ "{:,.2f}".format(item.total_paid) }}</td>
+                <td class="text-right">₦{{ "{:,.2f}".format(item.balance) }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="3" class="text-right"><strong>TOTAL</strong></td>
+                <td class="text-right"><strong>{{ grand_totals.cartons }}</strong></td>
+                <td class="text-right"><strong>₦{{ "{:,.2f}".format(grand_totals.wages) }}</strong></td>
+                <td class="text-right"><strong>₦{{ "{:,.2f}".format(grand_totals.paid) }}</strong></td>
+                <td class="text-right"><strong>₦{{ "{:,.2f}".format(grand_totals.balance) }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <div class="generated-date">
+            Generated on: {{ generated_date.strftime('%B %d, %Y') }}
+        </div>
+        <div class="signature-line">
+            <div class="signature-box">
+                Prepared by: {{ prepared_by }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
