@@ -1,16 +1,16 @@
 """
-Vercel serverless function entry point for Hilltop Tea application.
+Simplified Vercel serverless function entry point for Hilltop Tea application.
 
-This file serves as the entry point for Vercel's serverless deployment.
+This version removes WeasyPrint dependency for easier deployment.
 """
 
+import os
 from app import create_app
 
 # Create the Flask application
 app = create_app()
 
 # Vercel requires the app to be available at module level
-# The WSGI application is exposed for Vercel to use
 wsgi_app = app
 
 # For Vercel serverless functions
