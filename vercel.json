@@ -3,12 +3,24 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/init_db.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "dest": "api/index.py",
       "src": "/(.*)"
+    },
+    {
+      "dest": "api/init_db.py",
+      "src": "/api/init-db"
+    },
+    {
+      "dest": "api/init_db.py",
+      "src": "/api/health"
     }
   ],
   "version": 2
